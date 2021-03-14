@@ -20,13 +20,16 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import SyncIcon from '@material-ui/icons/Sync';
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from "@material-ui/core/InputLabel";
 import SearchIcon from '@material-ui/icons/Search';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import axios from 'axios'
 import {
     Redirect,
     Link
@@ -70,19 +73,12 @@ class DatedList extends React.Component {
             isDrawerOpen: false,
             isLoggedOut: false,
             loading: false,
-            selectedSeat: 'a_seat'
+            selectedSeat: 'a_seat',
+            open:false
         }
-        this.setSelectedDate = this.setSelectedDate.bind(this);
-        this.handleDateChange = this.handleDateChange.bind(this);
-        this.toggleDrawer = this.toggleDrawer.bind(this);
-        this.increaseDate = this.increaseDate.bind(this);
-        this.decreaseDate = this.decreaseDate.bind(this);
-        this.hanldeSignOut = this.hanldeSignOut.bind(this);
-        this.handleSeatSelect =this.handleSeatSelect.bind(this);
-        this.getSeatIfLoggedInAsSo = this.getSeatIfLoggedInAsSo.bind(this);
 
     }
-    getSeatIfLoggedInAsSo(){
+    getSeatIfLoggedInAsSo = ()=>{
         var seat = firebaseAuth.isAuthenticated ? firebaseAuth.user.name : '';
         
         seat = isSo() ? this.state.selectedSeat : seat;
@@ -90,24 +86,24 @@ class DatedList extends React.Component {
     
     }
     
-    hanldeSignOut() {
+    hanldeSignOut =() => {
         firebaseAuth.signout();
         this.setState({ isLoggedOut: true })
 
     }
-    toggleDrawer(status) {
+    toggleDrawer = (status) => {
         this.setState({ isDrawerOpen: !this.state.isDrawerOpen })
     }
 
-    componentDidMount() {
+    componentDidMount = () => {
         this.setSelectedDate(getTomorrowsDate());
     }
-    componentWillUnmount() {
+    componentWillUnmount = () => {
         this.unsubscribe();
         console.log("Un Mounting")
     }
 
-    setSelectedDate(newDate, seat) {
+    setSelectedDate  = (newDate, seat) => {
         var date = newDate || this.state.selectedDate;
         seat = seat || this.getSeatIfLoggedInAsSo();
         
@@ -131,19 +127,28 @@ class DatedList extends React.Component {
 
         this.setState({ selectedDate: date, loading: true })
     }
-    handleSeatSelect(event){
+    handleSync = () => {
+        this.setState({open:true})    
+        axios.get("https://api-process.glitch.me/sync/" + this.state.selectedSeat).then(()=>{
+            console.log("Syncing process")
+        }).catch(()=>{
+            console.log("Error in Syncing")
+        })
+        
+    }
+    handleSeatSelect = (event) =>{
         this.setState({ cases:[]})
         this.setSelectedDate(false , event.target.value);
 
     }
-    handleDateChange(event) {
+    handleDateChange = (event) => {
         this.setSelectedDate(event.target.value);
     };
-    increaseDate() {
+    increaseDate = () => {
         var newdate = moment(this.state.selectedDate).add(1, "days").format("YYYY-MM-DD")
         this.setSelectedDate(newdate)
     }
-    decreaseDate() {
+    decreaseDate = () => {
         var newdate = moment(this.state.selectedDate).subtract(1, "days").format("YYYY-MM-DD")
         this.setSelectedDate(newdate)
     }
@@ -190,6 +195,10 @@ class DatedList extends React.Component {
                             <ListItemIcon><FormatListBulletedIcon/></ListItemIcon>
                             <ListItemText primary={"View UpComing Cases With Process"} />
                         </ListItem>
+                        <ListItem button onClick={this.handleSync}>
+                            <ListItemIcon><SyncIcon/></ListItemIcon>
+                            <ListItemText primary={"Sync Process"} />
+                        </ListItem>
                         <Divider />
                         <ListItem button onClick={this.hanldeSignOut} >
                             <ListItemIcon><ExitToAppIcon /></ListItemIcon>
@@ -233,6 +242,9 @@ class DatedList extends React.Component {
                 </div>}
                 <ListCaseComponent loading={this.state.loading} seat={seat} cases={this.state.cases}></ListCaseComponent>
                 {!isSo() && <NewEntryComponent seat={seat} />}
+                <Snackbar open={this.state.open} autoHideDuration={6000} >
+                    <Alert severity="info">Sync Process started!</Alert>
+                </Snackbar>
             </div>
 
         )
