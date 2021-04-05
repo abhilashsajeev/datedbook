@@ -71,7 +71,7 @@ class DatedList extends React.Component {
             selectedDate: getTomorrowsDate(),
             cases: [],
             isDrawerOpen: false,
-            isLoggedOut: false,
+            isLoggedOut: !firebaseAuth.isAuthenticated,
             loading: false,
             selectedSeat: 'a_seat',
             open:false
@@ -121,11 +121,11 @@ class DatedList extends React.Component {
                     cases.push(caseObj);
                 });
 
-                this.setState({ cases: cases, loading: false, selectedSeat: seat })
+                this.setState({ cases: cases, loading: false, selectedSeat: seat})
 
             })
 
-        this.setState({ selectedDate: date, loading: true })
+        this.setState({ selectedDate: date, loading: true})
     }
     handleSync = () => {
         this.setState({open:true})    

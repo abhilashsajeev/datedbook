@@ -16,17 +16,22 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import SyncIcon from '@material-ui/icons/Sync';
+import SearchIcon from '@material-ui/icons/Search';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import axios from 'axios'
 import {Table, TableContainer, TableBody, TableCell, TableHead, TableRow} from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from "@material-ui/core/InputLabel";
 import Box from '@material-ui/core/Box';
-
-
 import {
-    Redirect
+    Redirect,
+    Link
 } from "react-router-dom";
+import { Divider } from '@material-ui/core';
+
 
 
 const getFormattedDate = (date) => {
@@ -120,7 +125,15 @@ class ViewUpcomingCasesWithProcess extends React.Component {
 
     }
 
-
+    handleSync = () => {
+        this.setState({open:true})    
+        axios.get("https://api-process.glitch.me/sync/" + this.state.selectedSeat).then(()=>{
+            console.log("Syncing process")
+        }).catch(()=>{
+            console.log("Error in Syncing")
+        })
+        
+    }
 
     hanldeSignOut() {
         firebaseAuth.signout();
@@ -181,7 +194,8 @@ class ViewUpcomingCasesWithProcess extends React.Component {
         if (isLoggedOut) {
             return (<Redirect to="/login" />)
         }
-
+        const PostingBookLink = props => <Link to={"/"} {...props} />;
+        const SearchLink = props => <Link to={"/Search"} {...props} />;
 
         return (
             <div>
@@ -202,7 +216,19 @@ class ViewUpcomingCasesWithProcess extends React.Component {
                 <Drawer anchor="left"
                     open={this.state.isDrawerOpen} onClose={this.toggleDrawer} >
                     <List>
-
+                        <ListItem button component={SearchLink}>
+                            <ListItemIcon><SearchIcon /></ListItemIcon>
+                            <ListItemText primary={"Search Case"} />
+                        </ListItem>
+                        <ListItem button component={PostingBookLink}>
+                            <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                            <ListItemText primary={"Posting Book "} />
+                        </ListItem>
+                        <ListItem button onClick={this.handleSync}>
+                            <ListItemIcon><SyncIcon/></ListItemIcon>
+                            <ListItemText primary={"Sync Process"} />
+                        </ListItem>
+                        <Divider />
                         <ListItem button onClick={this.hanldeSignOut} >
                             <ListItemIcon><ExitToAppIcon /></ListItemIcon>
                             <ListItemText primary={"Sign out"} />
