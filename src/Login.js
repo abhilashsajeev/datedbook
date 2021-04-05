@@ -132,6 +132,7 @@ class Login extends React.Component {
                                 <TextField
                                     id="password"
                                     label="Password"
+                                    type="password"
                                     fullWidth={true}
                                     InputLabelProps={{
                                         shrink: true,
