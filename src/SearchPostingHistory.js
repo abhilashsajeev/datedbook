@@ -139,35 +139,30 @@ class SearchPostingHistory extends React.Component {
             loading: false,
             openSnackBar:false,
         }
-        this.toggleDrawer = this.toggleDrawer.bind(this);
-        this.searchHistory = this.searchHistory.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.hanldeSignOut = this.hanldeSignOut.bind(this);
-        this.handleSnackBarClose = this.handleSnackBarClose.bind(this);
 
     }
 
-    handleSnackBarClose(){
+    handleSnackBarClose = ()=>{
         this.setState({openSnackBar:false})
     }
 
-    hanldeSignOut() {
+    hanldeSignOut = () => {
         firebaseAuth.signout();
         this.setState({ isLoggedOut: true })
 
     }
-    toggleDrawer(status) {
+    toggleDrawer = (status) => {
         this.setState({ isDrawerOpen: !this.state.isDrawerOpen })
     }
 
 
     
-    handleChange(event){
+    handleChange = (event) => {
         this.setState({caseNo: event.target.value})
 
     }
 
-    searchHistory(){
+    searchHistory = () => {
         this.setState({loading:true})
         var num = this.state.caseNo.split("/")[0];
         var year =  this.state.caseNo.split("/")[1];

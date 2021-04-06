@@ -48,9 +48,7 @@ class Login extends React.Component {
             password: '',
             redirectToReferrer: false,
         }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
-        this.setRedirectToReferer = this.setRedirectToReferer.bind(this);
+        
     }
 
     componentDidMount(){
@@ -61,12 +59,12 @@ class Login extends React.Component {
         }
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         var obj = {}
         obj[event.target.id] = event.target.value;
         this.setState(obj);
     }
-    handleLogin() {
+    handleLogin = () => {
         if(this.state.username !== '' && this.state.password !== ''){
             var loginData = {
                 username: this.state.username,
@@ -78,7 +76,7 @@ class Login extends React.Component {
         }
         
     }
-    setRedirectToReferer(){
+    setRedirectToReferer = ()=> {
         this.setState({redirectToReferrer:true})
     }
     render() {
